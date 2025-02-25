@@ -30,6 +30,8 @@ impl Vendor for St {
             DebugSequence::Arm(Stm32Armv6::create(Stm32Armv6Family::L0))
         } else if chip.name.starts_with("STM32G0") {
             DebugSequence::Arm(Stm32Armv6::create(Stm32Armv6Family::G0))
+        } else if chip.name.starts_with("STM32WL") {
+            DebugSequence::Arm(Stm32Armv6::create(Stm32Armv6Family::WL))
         } else if chip.name.starts_with("STM32F1")
             || chip.name.starts_with("STM32F2")
             || chip.name.starts_with("STM32F3")
@@ -39,7 +41,6 @@ impl Vendor for St {
             || chip.name.starts_with("STM32L1")
             || chip.name.starts_with("STM32L4")
             || chip.name.starts_with("STM32WB")
-            || chip.name.starts_with("STM32WL")
         {
             DebugSequence::Arm(Stm32Armv7::create())
         } else if chip.name.starts_with("STM32H7S") || chip.name.starts_with("STM32H7R") {

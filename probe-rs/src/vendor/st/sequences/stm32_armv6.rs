@@ -22,6 +22,9 @@ pub enum Stm32Armv6Family {
 
     /// STM32G0 family
     G0,
+
+    /// STM32WL family
+    WL,
 }
 
 /// Marker structure for ARMv6 STM32 devices.
@@ -42,7 +45,7 @@ mod rcc {
     use bitfield::bitfield;
 
     /// The base address of the RCC peripheral
-    const RCC: u64 = 0x40021000;
+    const RCC: u64 = 0x48400000;
 
     macro_rules! enable_reg {
         ($name:ident, $offset:literal, $bit:literal) => {
@@ -75,6 +78,7 @@ mod rcc {
     enable_reg!(EnrF0, 0x18, 22);
     enable_reg!(EnrL0, 0x34, 22);
     enable_reg!(EnrG0, 0x3c, 27);
+    enable_reg!(EnrWL, 0x54, 15);
 }
 
 mod dbgmcu {
@@ -82,7 +86,7 @@ mod dbgmcu {
     use bitfield::bitfield;
 
     /// The base address of the DBGMCU component
-    const DBGMCU: u64 = 0x40015800;
+    const DBGMCU: u64 = 0x40008000;
 
     bitfield! {
         /// The control register (CR) of the DBGMCU. This register is described in "RM0360: STM32F0
@@ -90,13 +94,13 @@ mod dbgmcu {
         pub struct Control(u32);
         impl Debug;
 
-        pub u8, dbg_standby, enable_standby_debug: 2;
+        pub u8, dbg_standby, enable_standby_debug: 0;
         pub u8, dbg_stop, enable_stop_debug: 1;
     }
 
     impl Control {
         /// The offset of the Control register in the DBGMCU block.
-        const ADDRESS: u64 = 0x04;
+        const ADDRESS: u64 = 0x0;
 
         /// Read the control register from memory.
         pub fn read(memory: &mut dyn ArmMemoryInterface) -> Result<Self, ArmError> {
@@ -136,6 +140,11 @@ impl ArmDebugSequence for Stm32Armv6 {
                 enr.enable_dbg(true);
                 enr.write(&mut *memory)?;
             }
+            Stm32Armv6Family::WL => {
+                let mut enr = rcc::EnrWL::read(&mut *memory)?;
+                enr.enable_dbg(true);
+                enr.write(&mut *memory)?;
+            }
         }
 
         let mut cr = dbgmcu::Control::read(&mut *memory)?;
@@ -164,6 +173,11 @@ impl ArmDebugSequence for Stm32Armv6 {
             }
             Stm32Armv6Family::G0 => {
                 let mut enr = rcc::EnrG0::read(&mut *memory)?;
+                enr.enable_dbg(false);
+                enr.write(&mut *memory)?;
+            }
+            Stm32Armv6Family::WL => {
+                let mut enr = rcc::EnrWL::read(&mut *memory)?;
                 enr.enable_dbg(false);
                 enr.write(&mut *memory)?;
             }
