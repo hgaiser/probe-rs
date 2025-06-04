@@ -321,7 +321,7 @@ fn armv8a_core_start(
 
 /// DebugCoreStart for Cortex-M devices
 pub(crate) fn cortex_m_core_start(core: &mut dyn ArmMemoryInterface) -> Result<(), ArmError> {
-    use crate::architecture::arm::core::armv7m::Dhcsr;
+    use crate::architecture::arm::core::armv6m::Dhcsr;
 
     let current_dhcsr = Dhcsr(core.read_word_32(Dhcsr::get_mmio_address())?);
 
@@ -343,7 +343,7 @@ pub(crate) fn cortex_m_core_start(core: &mut dyn ArmMemoryInterface) -> Result<(
 
 /// ResetCatchClear for Cortex-M devices
 fn cortex_m_reset_catch_clear(core: &mut dyn ArmMemoryInterface) -> Result<(), ArmError> {
-    use crate::architecture::arm::core::armv7m::Demcr;
+    use crate::architecture::arm::core::armv6m::Demcr;
 
     // Clear reset catch bit
     let mut demcr = Demcr(core.read_word_32(Demcr::get_mmio_address())?);
@@ -355,7 +355,7 @@ fn cortex_m_reset_catch_clear(core: &mut dyn ArmMemoryInterface) -> Result<(), A
 
 /// ResetCatchSet for Cortex-M devices
 fn cortex_m_reset_catch_set(core: &mut dyn ArmMemoryInterface) -> Result<(), ArmError> {
-    use crate::architecture::arm::core::armv7m::{Demcr, Dhcsr};
+    use crate::architecture::arm::core::armv6m::{Demcr, Dhcsr};
 
     // Request halt after reset
     let mut demcr = Demcr(core.read_word_32(Demcr::get_mmio_address())?);
@@ -371,7 +371,7 @@ fn cortex_m_reset_catch_set(core: &mut dyn ArmMemoryInterface) -> Result<(), Arm
 
 /// ResetSystem for Cortex-M devices
 fn cortex_m_reset_system(interface: &mut dyn ArmMemoryInterface) -> Result<(), ArmError> {
-    use crate::architecture::arm::core::armv7m::Aircr;
+    use crate::architecture::arm::core::armv6m::Aircr;
 
     let mut aircr = Aircr(0);
     aircr.vectkey();
@@ -386,7 +386,7 @@ fn cortex_m_reset_system(interface: &mut dyn ArmMemoryInterface) -> Result<(), A
 pub(crate) fn cortex_m_wait_for_reset(
     interface: &mut dyn ArmMemoryInterface,
 ) -> Result<(), ArmError> {
-    use crate::architecture::arm::core::armv7m::Dhcsr;
+    use crate::architecture::arm::core::armv6m::Dhcsr;
 
     let start = Instant::now();
 

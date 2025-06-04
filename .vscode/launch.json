@@ -47,6 +47,22 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "debug stm32wl33ccvx",
+      "cargo": {
+        "args": ["build", "--package", "probe-rs-tools"],
+        "filter": {
+          "name": "probe-rs",
+          "kind": "bin"
+        }
+      },
+      "env": {
+        "RUST_LOG": "probe_rs=trace",
+      },
+      "args": ["reset", "--chip", "STM32WL33CCVx", "--chip-description-path", "/home/hgaiser/dev/wtw/probe-rs/target-gen/STM32WL3_Series.yaml"],
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "list attached probes",
       "cargo": {
         "args": ["build", "--package", "probe-rs-tools"],
